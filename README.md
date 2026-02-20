@@ -1,9 +1,9 @@
-# 🤖 Guía de Instalación: Asistente IA Local (Ollama + ShellGPT) en openSUSE (Zsh)
+# 🤖 Guía de Instalación: Asistente IA Local (Ollama + ShellGPT) en Linux (Zsh)
 
 Esta guía documenta todo el proceso que seguimos para integrar un modelo de Inteligencia Artificial (Llama 3.2) directamente en la terminal de Linux (zsh) para que funcione como un asistente personal rápido, similar a la experiencia "Warp Console", pero 100% en local y privado.
 
 ## 🛠️ Requisitos Previos
-* openSUSE Tumbleweed (o cualquier distribución Linux)
+* Cualquier distribución Linux (Ubuntu, Debian, openSUSE, Arch...)
 * Tarjeta gráfica dedicada (idealmente Nvidia 4GB+ para que quepan modelos eficientes como Llama 3.2 de 3B).
 * Zsh instalado y configurado (compatible con Oh-My-Zsh y Powerlevel10k).
 * `python3-pipx` o entorno virtual parecido para instalar paquetes de Python.

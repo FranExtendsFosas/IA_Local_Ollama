@@ -3,7 +3,7 @@
 # Este script está preparado para ser ejecutado por un Agente IA o un Usuario para desplegar todo el entorno de forma automática.
 
 echo "=========================================================="
-echo "🤖 Iniciando Instalación de Entorno Terminal IA (openSUSE)"
+echo "🤖 Iniciando Instalación de Entorno Terminal IA (Linux)"
 echo "=========================================================="
 
 # 1. Instalar dependencias base
