@@ -116,12 +116,14 @@ alias tldr="LANGUAGE=es:en tldr"
 function _ia_fn() { sgpt "$*" }
 function _cmd_fn() { sgpt --shell "$*" }
 function _chat_fn() { sgpt --repl "$*" }
+function _cod_fn() { sgpt --code "$*" }
 
 # Alias mágicos que evitan que ZSH procese los signos de interrogación y otros símbolos
 alias ia="noglob _ia_fn"
 alias cmd="noglob _cmd_fn"
 alias haz="noglob _cmd_fn"
 alias chat="noglob _chat_fn"
+alias cod="noglob _cod_fn"
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 

@@ -121,5 +121,6 @@ Para que la terminal en el otro ordenador luzca y funcione exactamente igual que
 | :--- | :--- |
 | `ia cómo abro puertos en apache?` | Responde con inteligencia y explicaciones generales |
 | `cmd listar ocultos en media` | Responde con Asistente (Opción **E**jecutar, **D**escribir, **A**bortar) |
+| `cod crear clase python persona` | Genera **únicamente el código** de programación listo para guardar/copiar |
 | `chat enseñame comandos basicos de git` | Empieza un **Modo Conversación Infinita** con memoria |
 | (Escribes) `borrar la papelera` + **Ctrl+G** | Sustituye tu texto escrito al instante por el comando crudo, ej: `rm -rf ~/.local/share/Trash/files/*` |
