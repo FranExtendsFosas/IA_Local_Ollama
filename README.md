@@ -1,126 +1,97 @@
-# 🤖 Guía de Instalación: Asistente IA Local (Ollama + ShellGPT) en Linux (Zsh)
+# 🤖 Guía de Instalación: Asistente IA Local (Ollama + ShellGPT + Qwen) en Zsh
 
-Esta guía documenta todo el proceso que seguimos para integrar un modelo de Inteligencia Artificial (Llama 3.2) directamente en la terminal de Linux (zsh) para que funcione como un asistente personal rápido, similar a la experiencia "Warp Console", pero 100% en local y privado.
+Esta guía documenta el proceso definitivo para integrar un modelo de Inteligencia Artificial enfocado en programación (**Qwen 2.5 Coder**) directamente en la terminal de Linux (Zsh). Funciona como un asistente ultra-rápido cien por cien en local, privado, sin alucinaciones, comentando sus propios comandos antes de ejecutarlos.
 
 ## 🛠️ Requisitos Previos
-* Cualquier distribución Linux (Ubuntu, Debian, openSUSE, Arch...)
-* Tarjeta gráfica dedicada (idealmente Nvidia 4GB+ para que quepan modelos eficientes como Llama 3.2 de 3B).
+* Distribución Linux (Ubuntu, openSUSE, Arch...)
+* Tarjeta gráfica dedicada (idealmente Nvidia de 4GB+).
 * Zsh instalado y configurado (compatible con Oh-My-Zsh y Powerlevel10k).
-* `python3-pipx` o entorno virtual parecido para instalar paquetes de Python.
+* `python3-pipx` o similar para instalar paquetes de Python.
 
 ---
 
-## 🚀 Paso 1: Instalación de Ollama y el Modelo IA
+## 🚀 Paso 1: Instalación de Ollama y el Modelo Qwen
 
-Ollama es el motor en segundo plano (Daemon) que ejecuta el cerebro de la IA.
+Ollama ejecuta los modelos de IA localizando aceleración gráfica pura. Llama 3.2 era conversacional, pero **Qwen 2.5 Coder de 3B** es un ingeniero de Linux y no inventa banderas (flags) inexistentes.
 
-1. **Instalar Ollama oficialmente:**
+1. **Instalar Ollama:**
    ```bash
    curl -fsSL https://ollama.com/install.sh | sh
    ```
-   *Nota: Detectará automáticamente si tienes Nvidia y configurará aceleración por hardware (CUDA).*
 
-2. **Descargar el modelo ligero para terminal (`llama3.2`):**
-   *(Este modelo de 3B ocupa ~2.0 GB de VRAM, dejando memoria libre para otras tareas y proveyendo un razonamiento excelente).*
+2. **Descargar el modelo de programación avanzado (Ocupa ~1.9 GB):**
    ```bash
-   ollama pull llama3.2
+   ollama pull qwen2.5-coder:3b
    ```
 
 ---
 
-## 📦 Paso 2: Instalar ShellGPT (sgpt)
+## 📦 Paso 2: Instalar y Configurar ShellGPT (sgpt)
 
-ShellGPT es un programa en Python muy robusto e integrado para lanzar _prompts_ al modelo directamente. Usarlo evita problemas graves que suceden si programamos _scripts_ manuales en Zsh (como atascos con la visualización por el agresivo diseño del tema Powerlevel10k).
+ShellGPT es el intermediario en Python que conecta la API de Ollama con nuestras funciones de Zsh.
 
-1. **Instalar dependencias y ShellGPT:**
+1. **Instalación:**
    ```bash
    sudo zypper in python3-pipx
    pipx install shell-gpt
    ```
 
-2. **Generar el archivo de configuración inicial:**
-   Ejecuta esto en una terminal, y cuando te pida una "API KEY", escribe cualquier letra y pulsa `Enter`. Esto forzará un error inicial pero creará la carpeta `~/.config/shell_gpt`.
+2. **Generar archivos iniciales (te pedirá API key, pon cualquier cosa):**
    ```bash
    sgpt "hola"
    ```
 
 ---
 
-## ⚙️ Paso 3: Configurar ShellGPT para Ollama Local
+## ⚙️ Paso 3: Volcado de Configuración y Roles
 
-Por defecto, ShellGPT intenta conectarse a los servidores de la nube de ChatGPT. Hay que desviar su atención a tu computadora local.
+Para que el modelo se comporte de forma estricta (no envuelva los comandos en Markdown y sea hiper reduccionista dictando parámetros), debes reemplazar dos cosas en tu máquina con los archivos de esta carpeta:
 
-1. Reemplazamos el archivo `~/.config/shell_gpt/.sgptrc` (puedes usar el archivo `config_shell_gpt/.sgptrc` incluido en esta carpeta) para que contenga **exactamente** estas tres líneas clave en lugar del acceso por defecto:
-
-   ```env
-   OPENAI_API_HOST=http://localhost:11434/v1
-   OPENAI_API_KEY=ollama
-   DEFAULT_MODEL=llama3.2
-   ```
-
----
-
-## 🧠 Paso 4: Evitar las "Alucinaciones" (Roles en Español)
-
-Para que el modelo Llama 3.2 conteste en español perfecto, explique los comandos como un profesor paciente y no intente "buscar con código dentro de Linux" si le preguntas por la capital de Francia, modificamos sus **Roles Internos**.
-
-*   Solo tienes que copiar la carpeta `roles/` que está incluida aquí junto a esta guía y sustituirla por la que el programa generó en `~/.config/shell_gpt/roles/`.
+1. **Configuración Base `.sgptrc`**:
+   Sustituye el contenido de tu `~/.config/shell_gpt/.sgptrc` con el archivo proporcionado `config_shell_gpt/.sgptrc`. Se asegura de apuntar a `localhost:11434` y exige que el `DEFAULT_MODEL` sea `qwen2.5-coder:3b`.
+   
+2. **Los Roles de Personalidad**:
+   Copia los archivos dentro de `config_shell_gpt/roles/` hacia `~/.config/shell_gpt/roles/`. Esto incluye:
+   * **Shell Command Generator:** Obligado a dar comandos limpios 100% compatibles con openSUSE sin adornos.
+   * **Shell Command Descriptor:** Obligado a explicar el código de forma ultracorta y sintética para usarlo de comentario superior.
 
 ---
 
-## ⌨️ Paso 5: Los Alias y La Magia en la Terminal (Zsh)
+## ⌨️ Paso 4: Zsh Aliases de la IA (Las 4 Claves de Poder)
 
-Por último, para hacer la comunicación 100% natural, eliminamos la necesidad de poner comillas `""` o de usar la palabra completa `sgpt` al comienzo de cada instrucción.
+La integración estrella se pega directamente en tu `~/.zshrc`. Tienes el código base para copiártelo dentro del archivo `zsh_aliases.sh`.
 
-Copia las líneas del documento `zsh_aliases.sh` (puedes revisarlo en esta carpeta) y transfiérelas a tu archivo real **`~/.zshrc`**.
+Al hacerlo o recargar tu terminal (`source ~/.zshrc`), dispondrás de estos cuatro métodos milagrosos gestionados de firma limpia con `noglob`:
 
-**¿Qué milagros técnicos hace ese código en Zsh?**
-* **Funciones que juntan palabras:** Engloban cada palabra que escribes sin comillas para que a `sgpt` le llegue como "una sola orden".
-* **El comando protector `noglob`:** Evita que Zsh malinterprete signos como la interrogación (`?` = error bash de _string match failed_).
-* **El atajo de Teclado `Ctrl + G`:** Llama a la macro oculta de `sgpt --shell --no-interaction`, evalúa lo escrito, y te entrega el comando crudo para dispararlo directamente sin tener que darle a Enter primero.
+| Qué escribes en consola | Objetivo del Asistente | ¿Cómo opera? |
+| :--- | :--- | :--- |
+| **`cons [pregunta]`** | **Conocimiento rápido** | Respuesta directa que se autodestruye. (Ej: `cons año de creación linux`). |
+| **`ia`** o **`ia [hola]`** | **Chat Inmersivo (REPL)** | Abre una sesión interactiva (ChatGPT) **con memoria** del contexto anterior. Escribe `exit` para salir. |
+| **`cmd [tarea a hacer]`** | **Ingeniero de Sistema** | Extrae de Qwen el código. Extrae la explicación. Las unifica y las inserta (con un # en la explicación como salto de línea) mágicamente en tu teclado sin dar un Intro. |
+| **`cod [programa x]`** | **Programación Pura** | Escupe el snippet o bloque de código directamente. Ideal para redireccionar a archivos de desarrollo. |
 
 ---
 
-## � Paso 6: Replicación Visual de la Terminal (Zsh + Powerlevel10k)
+## 🎨 Paso 5: Replicación Visual (Zsh + Powerlevel10k)
 
-Para que la terminal en el otro ordenador luzca y funcione exactamente igual que esta (con autocompletado, resaltado de sintaxis, iconos y el tema Powerlevel10k), hemos copiado tus configuraciones clave en la carpeta `zsh_config`. Para replicarlo en otro equipo, sigue estos pasos:
+La estética completa que utilizamos se basa en una `.zshrc` increíblemente pulida (y sin líneas comentadas redundantes), además de los plugins clave.
 
-1. **Instalar Zsh y Oh-My-Zsh:**
-   En el nuevo ordenador, instala Zsh y el framework Oh-My-Zsh primero.
-   ```bash
-   sudo zypper in zsh
-   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-   ```
-
-2. **Instalar la Fuente (Fonts) necesaria:**
-   Powerlevel10k requiere la fuente **Meslo Nerd Font** para mostrar los iconos correctamente. Debes descargarla e instalarla en tu sistema o configurar tu emulador de terminal (Konsole, GNOME Terminal, etc.) para usarla.
-   * [Descargar recomendada: MesloLGS NF](https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k)
-
-3. **Instalar el Tema Powerlevel10k y los Plugins:**
-   Descarga el tema P10k y los plugins de sintaxis y sugerencias en las carpetas custom de Oh-My-Zsh.
+1. Instalar la fuente **MesloLGS NF** en tu sistema operativo y aplicarla a la emulación de tu terminal actual (Konsole, Gnome Terminal, etc).
+2. Clonar los plugins:
    ```bash
    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
    ```
-
-4. **Copiar tus configuraciones de respaldo:**
-   Sustituye los archivos por defecto del nuevo equipo por nuestras copias documentadas aquí:
-   ```bash
-   cp IA_Local_Ollama/zsh_config/zshrc_backup ~/.zshrc
-   cp IA_Local_Ollama/zsh_config/p10k_backup.zsh ~/.p10k.zsh
-   ```
-
-5. **Aplica y comprueba:**
-   Recarga la terminal con `source ~/.zshrc` y todo el aspecto visual y los plugins cobrarán vida al instante, exactamente igual que en tu sistema original.
+3. Sustituir en tu otro ordenador el `~/.zshrc` y `~/.p10k.zsh` por los que respaldamos oficialment en la carpeta de este git `zsh_config/`.
 
 ---
-## �🎉 Diccionario de Uso Rápido (Una vez instalado)
+## 💡 Ejemplo Demostrativo (`cmd`)
 
-| Lo que escribes en la consola | Lo que hace internamente |
-| :--- | :--- |
-| `ia cómo abro puertos en apache?` | Responde con inteligencia y explicaciones generales |
-| `cmd listar ocultos en media` | Responde con Asistente (Opción **E**jecutar, **D**escribir, **A**bortar) |
-| `cod crear clase python persona` | Genera **únicamente el código** de programación listo para guardar/copiar |
-| `chat enseñame comandos basicos de git` | Empieza un **Modo Conversación Infinita** con memoria |
-| (Escribes) `borrar la papelera` + **Ctrl+G** | Sustituye tu texto escrito al instante por el comando crudo, ej: `rm -rf ~/.local/share/Trash/files/*` |
+Si tecleas `cmd listar los programas con zypper`, sin llegar a presionar Enter, aparecerá de golpe esto parpadeando en tu cuadro de texto:
+
+```bash
+# zypper se -i: busca y lista detalles de paquetes instalados.
+zypper se -i
+```
+Podrás leerlo, entender sus comandos y presionar **Enter** con confianza. ¡La experiencia local perfecta!

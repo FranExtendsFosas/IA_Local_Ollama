@@ -1,25 +1,28 @@
-# Configuración para hablar con la IA sin usar comillas en consola
-function _ia_fn() { sgpt "$*" }
-function _cmd_fn() { sgpt --shell "$*" }
-function _chat_fn() { sgpt --repl "$*" }
+# ==========================================
+# ASISTENTE INTELIGENCIA ARTIFICIAL (QWEN)
+# ==========================================
+# Funciones base ocultas (Aíslan y evitan falsos volcados de variables por usar espacios en los textos)
+function _ia_fn() { sgpt --repl "$*" }
+function _cons_fn() { sgpt "$*" }
 function _cod_fn() { sgpt --code "$*" }
 
-# Alias mágicos que evitan que ZSH procese los signos de interrogación y otros símbolos (*, etc.)
-alias ia="noglob _ia_fn"
-alias cmd="noglob _cmd_fn"
-alias haz="noglob _cmd_fn"
-alias chat="noglob _chat_fn"
-alias cod="noglob _cod_fn"
-
-# Shell-GPT integration ZSH (Generador rápido con atajo de teclado)
-_sgpt_zsh() {
-if [[ -n "$BUFFER" ]]; then
-    _sgpt_prev_cmd=$BUFFER
-    BUFFER+="⌛"
-    zle -I && zle redisplay
-    BUFFER=$(sgpt --shell --no-interaction "$_sgpt_prev_cmd")
-    zle end-of-line
-fi
+function _cmd_fn() { 
+    echo -e "\e[1;36m🤖 Qwen está buscando el comando exacto...\e[0m"
+    local cmd_crudo=$(sgpt --role "Shell Command Generator" "$*")
+    # Fuerza el procesado de caracteres especiales e ignora explicaciones basura del modelo
+    local comando=$(echo "$cmd_crudo" | grep -a -v '```' | grep -a -v '^#' | sed 's/^`//; s/`$//' | sed '/^$/d' | head -n 1)
+    
+    echo -e "\e[1;36m🤖 Qwen está resumiendo su utilidad...\e[0m"
+    local desc_crudo=$(sgpt --role "Shell Command Descriptor" "$comando")
+    local comentario=$(echo "$desc_crudo" | tr '\n' ' ' | tr '\r' ' ' | sed 's/^[ \t]*//')
+    
+    # Inyecta en la línea de escritura la explicación (comentada) para aprender y el comando para usar
+    print -z "${comentario}
+${comando}" 
 }
-zle -N _sgpt_zsh
-bindkey '^g' _sgpt_zsh
+
+# Alias principales (Con 'noglob' le evitamos a Zsh interpretar símbolos de interrogación como rutas)
+alias cons="noglob _cons_fn" # [Consulta Rápida] Dispara, responde y limpia su propia memoria.
+alias ia="noglob _ia_fn"     # [Chat Infinito] Crea ambiente continuo reteniendo el texto anterior.
+alias cmd="noglob _cmd_fn"   # [Comandos GNU] Dedicado a tareas puras usando diccionario comentado.
+alias cod="noglob _cod_fn"   # [Programación] Genera solo pedazos de código de lenguajes limpios.
